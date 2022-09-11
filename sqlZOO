@@ -1,0 +1,187 @@
+1.	Show the CompanyName for James D. Kramer   
+// 
+SELECT CompanyName
+  FROM AdventureWorksLT2017.SalesLT.Customer
+ WHERE FirstName='James'
+   AND MiddleName='D.'
+   AND LastName='Kramer'
+//
+2.	Show all the addresses listed for 'Modular Cycle Systems'
+//
+SELECT CompanyName,AddressType,AddressLine1
+  FROM SalesLT.Customer  JOIN salesLt.CustomerAddress
+    ON (Customer.CustomerID=CustomerAddress.CustomerID)
+                  JOIN salesLt.Address
+    ON (CustomerAddress.AddressID=Address.AddressID)
+ WHERE CompanyName='Modular Cycle Systems'
+//	
+3.	Show OrdeQty, the Name and the ListPrice of the order made by CustomerID 635
+//
+ SELECT OrderQty,Name,ListPrice,CustomerID
+  FROM SalesLT.SalesOrderHeader JOIN SalesLT.SalesOrderDetail
+          ON SalesLT.SalesOrderDetail.SalesOrderID = SalesOrderHeader.SalesOrderID
+                        JOIN SalesLT.Product
+          ON SalesLT.SalesOrderDetail.ProductID=SalesLT.Product.ProductID
+WHERE CustomerID=635
+//
+
+4.	Show the first name and the email address of customer with CompanyName 'Bike World'
+//
+select FirstName,EmailAddress,CompanyName from AdventureWorksLT2017.SalesLT.Customer 
+where CompanyName='bike world'
+//
+
+
+
+5.	Show the CompanyName for all customers with an address in City 'Dallas'.
+//
+select CompanyName,City from AdventureWorksLT2017.SalesLT.Address 
+join AdventureWorksLT2017.SalesLT.CustomerAddress
+on CustomerAddress.AddressID=Address.AddressID 
+join AdventureWorksLT2017.SalesLT.Customer 
+on CustomerAddress.CustomerID=Customer.CustomerID 
+where City='Dallas'
+//
+6.	How many items with ListPrice more than $1000 have been sold?
+//
+select  Count(ListPrice) as satis from AdventureWorksLT2017.SalesLT.Product 
+where ListPrice1000
+//
+8.	Give the CompanyName of those customers with orders over $100000. Include the subtotal plus tax plus freight.
+//
+
+select CompanyName from AdventureWorksLT2017.SalesLT.Customer join AdventureWorksLT2017.SalesLT.SalesOrderHeader 
+on Customer.CustomerID=SalesOrderHeader.CustomerID 
+where SubTotal+Freight+TaxAmt>100000
+daha farklı şekilde:
+select CompanyName,SUM(SubTotal+Freight+TaxAmt) from AdventureWorksLT2017.SalesLT.Customer join AdventureWorksLT2017.SalesLT.SalesOrderHeader 
+on Customer.CustomerID=SalesOrderHeader.CustomerID 
+where SubTotal+Freight+TaxAmt>100000 group by CompanyName
+//
+9.	Find the number of left racing socks ('Racing Socks, L') ordered by CompanyName 'Riding Cycles'
+//
+select Name,CompanyName from AdventureWorksLT2017.SalesLT.Product 
+join AdventureWorksLT2017.SalesLT.SalesOrderDetail on SalesOrderDetail.ProductID=Product.ProductID
+join AdventureWorksLT2017.SalesLT.SalesOrderHeader on SalesOrderHeader.SalesOrderID=SalesOrderDetail.SalesOrderID
+join AdventureWorksLT2017.SalesLT.Customer on Customer.CustomerID=SalesOrderHeader.CustomerID
+where Name='Racing Socks, L'
+//
+10.	A "Single Item Order" is a customer order where only one item is ordered. Show the SalesOrderID and the UnitPrice for every Single Item Order.
+// select SalesOrderID,UnitPrice,OrderQty as 'single item order' from AdventureWorksLT2017.SalesLT.SalesOrderDetail
+where OrderQty=1
+//
+11.	Where did the racing socks go? List the product name and the CompanyName for all Customers who ordered ProductModel 'Racing Socks'.
+//
+select Name,CompanyName,FirstName from AdventureWorksLT2017.SalesLT.Product 
+join AdventureWorksLT2017.SalesLT.SalesOrderDetail on SalesOrderDetail.ProductID=Product.ProductID
+join AdventureWorksLT2017.SalesLT.SalesOrderHeader on SalesOrderHeader.SalesOrderID=SalesOrderDetail.SalesOrderID
+join AdventureWorksLT2017.SalesLT.Customer on Customer.CustomerID=SalesOrderHeader.CustomerID
+where Name= 'racing Socks, L'
+//
+
+12.	Show the product description for culture 'fr' for product with ProductID 736.
+//	
+select Culture,name,ProductID,Description from AdventureWorksLT2017.SalesLT.ProductModelProductDescription
+join AdventureWorksLT2017.SalesLT.ProductDescription
+on ProductDescription.ProductDescriptionID=ProductModelProductDescription.ProductDescriptionID
+join AdventureWorksLT2017.SalesLT.Product on Product.ProductModelID = ProductModelProductDescription.ProductModelID
+where culture ='fr'  and ProductID=736
+//
+14.	Use the SubTotal value in SaleOrderHeader to list orders from the largest to the smallest. For each order show the CompanyName and the SubTotal and the total weight of the order.
+//
+
+select SubTotal,CompanyName, Weight from AdventureWorksLT2017.SalesLT.SalesOrderHeader
+INNER join AdventureWorksLT2017.SalesLT.Customer on SalesOrderHeader.CustomerID=Customer.CustomerID
+INNER join AdventureWorksLT2017.SalesLT.SalesOrderDetail on SalesOrderDetail.SalesOrderID=SalesOrderHeader.SalesOrderID
+INNER join AdventureWorksLT2017.SalesLT.Product on Product.ProductID=SalesOrderDetail.ProductID 
+
+order by SubTotal DESC
+//
+
+16.	How many products in ProductCategory 'Cranksets' have been sold to an address in 'London'?
+//
+
+select  count(City) from AdventureWorksLT2017.SalesLT.ProductCategory pc
+join AdventureWorksLT2017.SalesLT.Product p on p.ProductCategoryID=pc.ProductCategoryID
+join AdventureWorksLT2017.SalesLT.SalesOrderDetail on SalesOrderDetail.ProductID=p.ProductID
+join AdventureWorksLT2017.SalesLT.SalesOrderHeader on SalesOrderHeader.SalesOrderID = SalesOrderDetail.SalesOrderID
+join AdventureWorksLT2017.SalesLT.Address on Address.AddressID=SalesOrderHeader.BillToAddressID
+where  pc.Name ='Cranksets' and City ='london'
+//
+18.	For every customer with a 'Main Office' in Dallas show AddressLine1 of the 'Main Office' and AddressLine1 of the 'Shipping' address - if there is no shipping address leave it blank. Use one row per customer.
+//
+
+select A.AddressLine1,CA.AddressType,C.CustomerID FROM AdventureWorksLT2017.SalesLT.CustomerAddress CA
+join AdventureWorksLT2017.SalesLT.Address A on A.AddressID=CA.AddressID
+join AdventureWorksLT2017.SalesLT.Customer C on C.CustomerID=CA.CustomerID
+where City like 'dallas' and AddressType ='Main Office'
+Union
+select A.AddressLine1,CA.AddressType,C.CustomerID FROM AdventureWorksLT2017.SalesLT.CustomerAddress CA
+join AdventureWorksLT2017.SalesLT.Address A on A.AddressID=CA.AddressID
+join AdventureWorksLT2017.SalesLT.Customer C on C.CustomerID=CA.CustomerID
+where City like 'dallas' and AddressType ='SHİPPİNG'
+//
+20.	Show the best selling item by value.
+//
+select Name,SUM(SalesOrderDetail.UnitPrice*SalesOrderDetail.OrderQty) as 'sum' from AdventureWorksLT2017.SalesLT.SalesOrderDetail 
+join AdventureWorksLT2017.SalesLT.Product on Product.ProductID=SalesOrderDetail.ProductID
+group by name
+order by sum  desc
+//
+
+22.	Show how many orders are in the following ranges (in $):
+Range	Number Of Orders	Total Value
+0- 99	 	 
+100- 999	 	 
+1000-9999	 	 
+10000-	 	 
+//
+SELECT
+  t.range AS 'RANGE',
+  COUNT(t.Total) AS 'Num Orders',
+  SUM(t.Total) AS 'Total Value'
+FROM
+  (
+    SELECT
+    CASE
+      WHEN
+        SalesOrderDetail.UnitPrice * SalesOrderDetail.OrderQty BETWEEN 0 AND 99
+      THEN
+        '0-99'
+      WHEN
+        SalesOrderDetail.UnitPrice * SalesOrderDetail.OrderQty BETWEEN 100 AND 999
+      THEN
+        '100-999'
+      WHEN
+        SalesOrderDetail.UnitPrice * SalesOrderDetail.OrderQty BETWEEN 1000 AND 9999
+      THEN
+        '1000-9999'
+      WHEN
+        SalesOrderDetail.UnitPrice * SalesOrderDetail.OrderQty > 10000
+      THEN
+        '10000-'
+      ELSE
+        'Error'
+    END AS 'Range',
+    SalesOrderDetail.UnitPrice * SalesOrderDetail.OrderQty AS Total
+  FROM
+    SalesLT.SalesOrderDetail
+  ) t
+GROUP BY
+  t.range;
+//
+23  Identify the three most important cities. Show the break down of top level product category against city. 
+//
+
+select TOP 3 Address.City ,pd.Name,SUM(SalesOrderDetail.OrderQty  * SalesOrderDetail.UnitPrice) as t from AdventureWorksLT2017.SalesLT.Address 
+inner join AdventureWorksLT2017.SalesLT.SalesOrderHeader on 
+SalesOrderHeader.BillToAddressID=Address.AddressID 
+inner join AdventureWorksLT2017.SalesLT.SalesOrderDetail on
+SalesOrderDetail.SalesOrderID=SalesOrderHeader.SalesOrderID
+inner join AdventureWorksLT2017.SalesLT.Product
+inner join AdventureWorksLT2017.SalesLT.ProductCategory pd on pd.ProductCategoryID =Product.ProductCategoryID 
+on Product.ProductID=SalesOrderDetail.ProductID
+GROUP BY Address.City, pd.Name order by t desc
+//
+
+24.	Identify the five most important employee. Show the break down of top level product category against city.
